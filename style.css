@@ -1,0 +1,67 @@
+@font-face{
+    font-family: 'Source Code Pro';
+    font-weight: 500;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('./fonts/SourceCodePro-Medium.ttf.woff2') format('woff2'),
+         url('./fonts/SourceCodePro-Medium.otf.woff') format('woff'),
+         url('./fonts/SourceCodePro-Medium.otf') format('opentype'),
+         url('./fonts/SourceCodePro-Medium.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Source Code Pro';
+    font-weight: 500;
+    font-style: italic;
+    font-stretch: normal;
+    src: url('./fonts/SourceCodePro-MediumIt.ttf.woff2') format('woff2'),
+         url('./fonts/SourceCodePro-MediumIt.otf.woff') format('woff'),
+         url('./fonts/SourceCodePro-MediumIt.otf') format('opentype'),
+         url('./fonts/SourceCodePro-MediumIt.ttf') format('truetype');
+}
+
+h1 {
+    font-family: 'Source Code Pro';
+}
+
+.win-header {
+    background: #ddd;
+    font-family: monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+    height: 21px;
+    border-bottom: solid 1px #ccc;
+}
+
+.win {
+    margin-top: 100px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 10px 30px 5px #00000047, 0px 0px 0px 6px #00000012;
+}
+
+#code {
+    height: 720px;
+}
+
+#terminal .xterm {
+    padding: 10px 15px;
+}
+
+html, body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 30px 30px;
+    box-sizing: border-box;
+
+}
+
+body {
+    background-image: url(./bg2.jpg);
+    background-size: cover;
+}

@@ -1,0 +1,32 @@
+{
+  "name": "cli-pg",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "awesome-typescript-loader": "^5.2.1",
+    "css-loader": "^3.2.0",
+    "glob": "^7.1.4",
+    "monaco-editor": "^0.18.0",
+    "monaco-editor-webpack-plugin": "^1.7.0",
+    "monaco-themes": "^0.3.3",
+    "source-map-loader": "^0.2.4",
+    "style-loader": "^1.0.0",
+    "typed-cli": "../cli",
+    "typescript": "^3.6.2",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.8",
+    "xterm": "^3.14.5"
+  },
+  "devDependencies": {
+    "@types/node": "^12.7.4",
+    "@types/xterm": "^3.0.0",
+    "serve": "^11.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

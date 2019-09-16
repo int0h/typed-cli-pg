@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./xterm.css">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <h1>foo</h1>
+    <div class="win">
+        <div class="win-header">
+            ~/work - Terminal
+        </div>
+        <div id='terminal'></div>
+    </div>
+
+    <div class="win">
+        <div class="win-header">
+            ~/work/curl.js - IDE
+        </div>
+        <div id='code'></div>
+    </div>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.js'></script>
+    <script src="./dist/vs/loader.js"></script>
+    <script>
+        window.monacoLoaded = () => {};
+        require.config({ paths: { 'vs': './dist/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            monacoLoaded(monaco);
+            // var editor = monaco.editor.create(document.getElementById('code'), {
+            //     value: [
+            //         'function x() {',
+            //         '\tconsole.log("Hello world!");',
+            //         '}'
+            //     ].join('\n'),
+            //     language: 'javascript'
+            // });
+        });
+    </script>
+    <script src='./dist/app.bundle.js'></script>
+</body>
+</html>
