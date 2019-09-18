@@ -1,2 +1,3 @@
 node_modules
-dist/app.bundle.js
+# have to put bundle in the repo because it will go to gh-pages
+# dist/app.bundle.js

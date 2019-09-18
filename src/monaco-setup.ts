@@ -64,12 +64,17 @@ export async function init() {
     const model = monaco.editor.createModel(
         `import {cli} from 'typed-cli';\n`,
         'typescript',
-        monaco.Uri.parse('file:///main.tsx')
+        monaco.Uri.parse('file:///main.ts')
     );
 
     monaco.editor.create(document.getElementById("code") as HTMLElement, {
         language: "javascript",
         model: model
     });
+
+    return {
+        setText: (text: string) => model.setValue(text),
+        getText: (): string => model.getValue(),
+    }
 
 }

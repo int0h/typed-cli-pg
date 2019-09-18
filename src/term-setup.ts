@@ -16,6 +16,17 @@ const themes = {
     novel: ["#000000", "#cc0000", "#009600", "#d06b00", "#0000cc", "#cc00cc", "#0087cc", "#cccccc", "#808080", "#cc0000", "#009600", "#d06b00", "#0000cc", "#cc00cc", "#0087cc", "#ffffff", "#dfdbc3", "#3b2322"]
 };
 
+const themeSelector = document.querySelector('#term-theme') as HTMLSelectElement;
+for (const [name] of Object.entries(themes)) {
+    const o = document.createElement('option');
+    o.innerText = `Theme: ${name}`;
+    o.value = name;
+    themeSelector.appendChild(o);
+}
+themeSelector.onchange = () => {
+    applyTheme(themes[themeSelector.value as keyof typeof themes]);
+}
+
 const applyTheme = (theme: string[]) => {
     const [
         black, red, green, yellow, blue, magneta, cyan, white,
@@ -46,7 +57,7 @@ term.setOption('allowTransparency', true);
 var shellprompt = `${chalkInstance.green('user@pc')}:${chalkInstance.blue('~/work')}$ `;
 const promptsize = 16;
 
-const prompt = function () {
+export const prompt = function () {
     term.write('\r\n' + shellprompt);
 };
 
@@ -61,19 +72,28 @@ term.writeln('');
 prompt();
 
 let reader = (str: string) => {console.log(str)};
+let tabHandler = (str: string) => {console.log('tab')};
+
 let buf = '';
 term.on('key', function (key, ev) {
-    console.log(key);
+    // console.log(key);
     var printable = (
         !ev.altKey && !ev.ctrlKey && !ev.metaKey
     );
 
+    if (key === '\t') {
+        tabHandler(buf);
+        return;
+    }
+
     if (key === '\u0003') {
+        buf = '';
         prompt();
         return;
     }
 
     if (key === '\u000b') {
+        buf = '';
         term.clear();
         return;
     }
@@ -90,6 +110,7 @@ term.on('key', function (key, ev) {
     } else if (printable) {
         if (key.length === 1) {
             buf += key;
+            // console.log(buf);
         }
         if (ev.code !== 'ArrowUp' && ev.code !== 'ArrowDown') {
             term.write(key);
@@ -111,4 +132,12 @@ export function write(text: string) {
 
 export function onRead(fn: (str: string) => void) {
     reader = fn;
+}
+
+export function onTab(fn: (str: string) => void) {
+    tabHandler = fn;
+}
+
+export function setBuf(str: string) {
+    buf = str;
 }
