@@ -187,7 +187,7 @@ async function main() {
             runProgramCompleter(program || '');
             return;
         }
-        console.log(argv);
+        // console.log(argv);
         const completions = runCompleter(getText(), argv, str);
 
     })

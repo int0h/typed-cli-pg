@@ -1,6 +1,8 @@
 import {Terminal} from 'xterm';
 import * as fit from 'xterm/lib/addons/fit/fit';
 import {chalkInstance} from 'typed-cli';
+import * as ansiEscapes from 'ansi-escapes';
+import {HistoryMgr} from './historyMgr';
 
 Terminal.applyAddon(fit);
 
@@ -75,6 +77,18 @@ let reader = (str: string) => {console.log(str)};
 let tabHandler = (str: string) => {console.log('tab')};
 
 let buf = '';
+
+const historyMgr = new HistoryMgr();
+// window.h = historyMgr;
+
+function replaceText(text: string) {
+    buf = text;
+    term.write(ansiEscapes.eraseLine);
+    term.write('\r');
+    term.write(shellprompt);
+    term.write(text);
+}
+
 term.on('key', function (key, ev) {
     // console.log(key);
     var printable = (
@@ -99,8 +113,15 @@ term.on('key', function (key, ev) {
     }
 
     if (ev.keyCode == 13) {
-        reader(buf);
+        const t = buf;
         buf = '';
+        reader(t);
+        if (t.trim() !== '') {
+            historyMgr.push(t);
+            // saveToHistory(t, historyPos);
+            // historyPos = history.length + 1;
+        }
+        // history.push(t);
         prompt();
     } else if (ev.keyCode == 8) {
         if (getCursorX() > promptsize) {
@@ -111,6 +132,12 @@ term.on('key', function (key, ev) {
         if (key.length === 1) {
             buf += key;
             // console.log(buf);
+        }
+        if (ev.code === 'ArrowUp') {
+            replaceText(historyMgr.goUp(buf));
+        }
+        if (ev.code === 'ArrowDown') {
+            replaceText(historyMgr.goDown(buf));
         }
         if (ev.code !== 'ArrowUp' && ev.code !== 'ArrowDown') {
             term.write(key);
@@ -140,4 +167,20 @@ export function onTab(fn: (str: string) => void) {
 
 export function setBuf(str: string) {
     buf = str;
+}
+
+export function getCursorPos(): Promise<{x: number, y: number}> {
+    return new Promise((resolve, reject) => {
+        const listener = term.onData(data => {
+            const matched = /^\u001b\[(\d+);(\d+)R$/.exec(data);
+            if (!matched) {
+                return;
+            }
+            const [y, x] = matched.slice(1).map(i => Number(i) - 1);
+            resolve({x, y});
+            listener.dispose();
+        });
+
+        term.write(ansiEscapes.cursorGetPosition);
+    });
 }
