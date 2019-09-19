@@ -5,10 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <style>
+        #loader {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            background: rgba(69, 114, 146, 0.95);
+            color: #fff;
+            font-family: helvetica;
+            font-size: 30pt;
+            line-height: 60pt;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            flex-direction: column;
+            transition: opacity 1s;
+        }
+        #progress, #progress-n {
+            font-family: monospace;
+        }
+    </style>
     <link rel="stylesheet" href="./xterm.css">
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+    <div id="loader">
+        Demo is loading
+        <br/>
+        Please standby
+        <br>
+        Progress: <span id="progress-n">0%</span>
+        <br>
+        <span id="progress"></span>
+    </div>
+    <script>
+        (function() {
+            var totalItems = 141;
+            var loadedItems = 0;
+            var loader = document.getElementById('loader');
+            var progress = document.getElementById('progress');
+            var progressN = document.getElementById('progress-n');
+
+            function updateProgress(n) {
+                var text = '';
+                for (var i = 0; i < 20; i++) {
+                    text += i / 20 < n ? '-' : '&nbsp;';
+                }
+                progress.innerHTML = '[' + text + ']';
+                const p = Math.min(Math.floor(loadedItems / totalItems * 100), 99);
+                const pt = ('    ' + p + '%').slice(-4);
+                progressN.innerHTML = pt;
+            };
+
+            window._loader = {
+                onItemLoad: function(n) {
+                    loadedItems += n || 1;
+                    updateProgress(loadedItems / totalItems);
+                },
+                onLoad: function() {
+                    loader.style.opacity = 0;
+                    setTimeout(function() {
+                        loader.style.display = 'none';
+                    }, 1000);
+                }
+            }
+        })();
+    </script>
     <select id="term-theme">
     </select>
     <div class="win">
@@ -18,6 +84,8 @@
         <div id='terminal'></div>
     </div>
 
+    <select id="code-theme">
+    </select>
     <div class="win">
         <div class="win-header">
             ~/work/curl.js - IDE
@@ -27,10 +95,21 @@
     <script src='https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.js'></script>
     <script src="./dist/vs/loader.js"></script>
     <script>
+        let i = 0;
         window.monacoLoaded = () => {};
-        require.config({ paths: { 'vs': './dist/vs' }});
+        require.config({
+            paths: { 'vs': './dist/vs' },
+            waitSeconds: 60,
+            onNodeCreated: (node, cfg, name) => {
+                window._loader.onItemLoad();
+                node.addEventListener('load', () => {
+                    window._loader.onItemLoad();
+                })
+            }
+        });
         require(['vs/editor/editor.main'], function() {
             monacoLoaded(monaco);
+            console.log('loaded monaco');
             // var editor = monaco.editor.create(document.getElementById('code'), {
             //     value: [
             //         'function x() {',

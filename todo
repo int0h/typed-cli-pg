@@ -1,2 +1,5 @@
-- monaco themes
++ monaco themes
 + support terminal history
+- css fixes
+- help command
++ loader

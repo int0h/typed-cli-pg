@@ -9,6 +9,8 @@ import {parseArgsStringToArgv} from 'string-argv';
 import { completeForCommandSet } from 'typed-cli/src/completer';
 import { alignTextMatrix } from 'typed-cli/src/utils';
 
+(window as any)._loader.onItemLoad(10);
+
 chalk.level = 16;
 chalk.enabled = true;
 
@@ -141,8 +143,8 @@ async function main() {
     setText(`cli.commands({
     program: 'git',
     description: 'Git is a free and open source distributed'
-            + 'version control system designed to handle everything'
-            + 'from small to very large projects with speed and efficiency.',
+            + ' version control system designed to handle everything'
+            + ' from small to very large projects with speed and efficiency.',
     completer: true,
 }, {
     // reset
@@ -152,7 +154,8 @@ async function main() {
             hard: option('boolean').description('Resets the index and working tree'),
             soft: option('boolean').description('Does not touch the index file or the working tree at all'),
             mixed: option('boolean').description('Resets the index but not the working tree'),
-        }
+        },
+        _: option('string').required()
     })
         .handle(data => console.log('executing reset with params:', data)),
 
@@ -190,8 +193,10 @@ async function main() {
         // console.log(argv);
         const completions = runCompleter(getText(), argv, str);
 
-    })
+    });
 
+    (window as any)._loader.onItemLoad(10);
+    (window as any)._loader.onLoad();
 }
 
 main();

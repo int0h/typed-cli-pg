@@ -50,7 +50,7 @@ w.term = term;
 term.open(document.getElementById('terminal') as HTMLElement);
 fit.fit(term);
 
-applyTheme(themes.novel);
+applyTheme(themes.obsidian);
 // term.setOption('fontFamily', 'Source Code Pro');
 term.setOption('fontFamily', 'monospace');
 term.setOption('allowTransparency', true);

@@ -1,5 +1,5 @@
-const parseTmTheme = require('monaco-themes').parseTmTheme;
-import {monokai} from './monaco-themes/';
+// const parseTmTheme = require('monaco-themes').parseTmTheme;
+import * as themes from './monaco-themes/';
 import {files} from './lib-generated';
 
 function waitForCallback(): Promise<typeof import('monaco-editor')> {
@@ -17,7 +17,19 @@ function waitForCallback(): Promise<typeof import('monaco-editor')> {
 export async function init() {
     const monaco = await waitForCallback();
 
-    monaco.editor.defineTheme('monokai', monokai as any);
+    const themeSelector = document.querySelector('#code-theme') as HTMLSelectElement;
+    for (const [name, theme] of Object.entries(themes)) {
+        const o = document.createElement('option');
+        o.innerText = `Theme: ${name}`;
+        o.value = name;
+        themeSelector.appendChild(o);
+        monaco.editor.defineTheme(name, theme as any);
+
+    }
+    themeSelector.onchange = () => {
+        monaco.editor.setTheme(themeSelector.value);
+    }
+
     monaco.editor.setTheme('monokai');
 
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
