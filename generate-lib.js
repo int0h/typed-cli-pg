@@ -22,9 +22,12 @@ glob('./src/samples/*.js', function(err, files) {
     }
     const res = files.map(path => {
         console.log('sample:', path);
-        const code = fs.readFileSync(path, 'utf-8');
+        const codeRaw = fs.readFileSync(path, 'utf-8');
+        const [firstLine, ...rest] = codeRaw.split('\n');
+        const description = firstLine.slice(3); // trim '// '
+        const code = rest.join('\n');
         const name = /([^\/]*)\.js$/.exec(path)[1];
-        return `export const ${name} = ${JSON.stringify({code, name})}`;
+        return `export const ${name} = ${JSON.stringify({code, name, description})}`;
     }).join('\n\n');
 
     fs.writeFileSync('./src/samples-generated.ts', res);

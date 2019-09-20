@@ -1,5 +1,5 @@
 import {Terminal} from 'xterm';
-import {createCommandHelper, option, chalkInstance, Printer, locales, command} from 'typed-cli';
+import {createCommandHelper, option, chalkInstance, Printer, locales, command, defaultCommand} from 'typed-cli';
 import {write, onRead, writeLn, onTab, prompt, setBuf} from './term-setup';
 import {init} from './monaco-setup';
 import { decorators } from 'typed-cli/src/decorator';
@@ -10,6 +10,7 @@ import { completeForCommandSet, completeForCliDecl } from 'typed-cli/src/complet
 import { alignTextMatrix } from 'typed-cli/src/utils';
 import { createCliHelper } from 'typed-cli/src/cli-helper';
 import { prepareCliDeclaration } from 'typed-cli/src/parser';
+import * as samples from './samples-generated';
 
 (window as any)._loader.onItemLoad(10);
 
@@ -78,9 +79,9 @@ function runHelper(newArgv: string[], evalCode: string) {
     argv = newArgv;
     try {
         exitCode = 0;
-        ((cli, command, option, console) => {
+        ((cli, command, option, console, chalk, defaultCommand) => {
             eval(evalCode);
-        })(cli, command, option, mockConsole);
+        })(cli, command, option, mockConsole, chalk, defaultCommand);
         writeLn('');
         writeLn(chalk.italic(`[exit code = ${chalk.blue(exitCode.toString())}]`));
     } catch(e) {
@@ -103,12 +104,21 @@ function runCompleter(evalCode: string, argv: string[], buf: string) {
         decl = _;
         throw 0;
     }
-    cli.commands = (cfg: any, arg: any) => cs = arg;
-    ((cli, command, option, console) => {
-        try {
-            eval(evalCode);
-        } catch(e) {}
-    })(cli, command, option, mockConsole);
+    cli.commands = (cfg: any, arg: any) => {
+        cs = arg;
+    };
+    try {
+        const fn = new Function('cli', 'command', 'option', 'console', 'defaultCommand', evalCode);
+        fn(cli, command, option, mockConsole, defaultCommand)
+    } catch(e) {
+        // console.error(e);
+        // return;
+    }
+    // ((cli, command, option, console) => {
+    //     try {
+    //         eval(evalCode);
+    //     } catch(e) {}
+    // })(cli, command, option, mockConsole);
 
     let completions: any[] = [];
     if (decl) {
@@ -122,13 +132,10 @@ function runCompleter(evalCode: string, argv: string[], buf: string) {
     applyCompletions(completions, argv, buf);
 }
 
-const programs = [
-    {name: 'git', description: 'pseudo git'},
-    {name: 'help', description: 'outputs help for this demo'},
-];
+const programCompletions = Object.values(samples);
 
 function runProgramCompleter(buf: string) {
-    const completions = programs
+    const completions = programCompletions
         .filter(({name}) => name.indexOf(buf) === 0)
         .map(({name, description}) => ({description, completion: name}));
     applyCompletions(completions, [buf], buf);
@@ -161,16 +168,28 @@ function applyCompletions(completions: {completion: string, description: string}
     write(buf);
 }
 
+function resolveProgram(program: string): null | string {
+    const sample = samples[program as keyof typeof samples];
+    if (!sample) {
+        return null;
+    }
+    const code = localStorage.getItem(`sample-code[${program}]`) || sample.code;
+    return code;
+}
+
 async function main() {
     const {getText, setText} = await init();
 
     onRead(str => {
         const [program, ...argv] = parseArgsStringToArgv(str);
-        if (program === 'git') {
-            const jsCode = getText();
+        const jsCode = resolveProgram(program);
+        if (!jsCode) {
             writeLn('');
-            runHelper(argv, jsCode);
+            writeLn(`program ${chalk.redBright(program)} is not found`);
+            return;
         }
+        writeLn('');
+        runHelper(argv, jsCode);
     });
 
     onTab(str => {
@@ -182,7 +201,11 @@ async function main() {
             runProgramCompleter(program || '');
             return;
         }
-        runCompleter(getText(), argv, str);
+        const code = resolveProgram(program);
+        if (!code) {
+            return;
+        }
+        runCompleter(code, argv, str);
     });
 
     (window as any)._loader.onItemLoad(10);
