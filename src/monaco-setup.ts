@@ -1,6 +1,7 @@
 // const parseTmTheme = require('monaco-themes').parseTmTheme;
 import * as themes from './monaco-themes/';
 import {files} from './lib-generated';
+import * as samples from './samples-generated';
 
 function waitForCallback(): Promise<typeof import('monaco-editor')> {
     const w: any = window;
@@ -31,6 +32,19 @@ export async function init() {
     }
 
     monaco.editor.setTheme('monokai');
+
+
+    const sampleSelector = document.querySelector('#sample-select') as HTMLSelectElement;
+    for (const [name, theme] of Object.entries(samples)) {
+        const o = document.createElement('option');
+        o.innerText = `Sample: ${name}`;
+        o.value = name;
+        o.selected = name === 'basic';
+        sampleSelector.appendChild(o);
+    }
+    sampleSelector.onchange = () => {
+        model.setValue((samples as any)[sampleSelector.value].code);
+    }
 
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
         noSemanticValidation: true,
@@ -83,6 +97,8 @@ export async function init() {
         language: "javascript",
         model: model
     });
+
+    sampleSelector.onchange(null as any);
 
     return {
         setText: (text: string) => model.setValue(text),
