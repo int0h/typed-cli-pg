@@ -64,33 +64,6 @@ export async function init() {
         monaco.languages.typescript.typescriptDefaults.addExtraLib(content, 'file:///' + filename);
     });
 
-    // monaco.languages.typescript.typescriptDefaults.addExtraLib([
-    //     `
-    //     export declare const multiplierPowers: {
-    //     bit: number;
-    //     byte: number;
-    //     kb: number;
-    //     mb: number;
-    //     gb: number;
-    //     tb: number;
-    //     pb: number;
-    //     eb: number;
-    //     zb: number;
-    //     yb: number;
-    // };
-    // export declare type StaticFormat = keyof typeof multiplierPowers | 'auto';
-    // export declare type FuncFormatter = ((size: number) => string | number);
-    // export declare type Format = StaticFormat | FuncFormatter;
-    // export declare function formatSize(format: Format, size: number): string | number;
-
-    // `
-    // ].join('\n'), 'file:///node_modules/@types/hdd/index.d.ts');
-
-    // monaco.languages.typescript.typescriptDefaults.addExtraLib(
-    //     'export declare function add(a: number, b: number): number',
-    //     'file:///node_modules/@types/math/index.d.ts'
-    // );
-
     const model = monaco.editor.createModel(
         `import {cli} from 'typed-cli';\n`,
         'typescript',
