@@ -44,8 +44,10 @@ export async function init() {
         sampleSelector.appendChild(o);
     }
     sampleSelector.onchange = () => {
-        model.setValue((samples as any)[sampleSelector.value].code);
+        const code = localStorage.getItem(`sample-code[${sampleSelector.value}]`) || (samples as any)[sampleSelector.value].code;
+        model.setValue(code);
         localStorage.setItem('code-sample', sampleSelector.value);
+        updateTitle();
     }
 
 
@@ -75,8 +77,20 @@ export async function init() {
         model: model
     });
 
+    function updateTitle() {
+        const elm = document.querySelector('.win-code .win-header') as HTMLElement;
+        elm.textContent = (isSampleChanged() ? '● ' : '') + `~/work/${sampleSelector.value}.js - IDE`
+    }
+
+    function isSampleChanged() {
+        const sampleText = samples[sampleSelector.value as keyof typeof samples].code;
+        const actualText = model.getValue();
+        return sampleText !== actualText;
+    }
+
     model.onDidChangeContent(() => {
-        console.log('changed');
+        localStorage.setItem(`sample-code[${sampleSelector.value}]`, model.getValue());
+        updateTitle();
     });
 
     const choosenSample = localStorage.getItem('code-sample') || 'basic';
