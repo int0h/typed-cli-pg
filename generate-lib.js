@@ -14,4 +14,18 @@ glob('./node_modules/typed-cli/**/*.d.ts', function(err, files) {
     });
     const code = `export const files = ${JSON.stringify(files)};`;
     fs.writeFileSync('./src/lib-generated.ts', code);
-})
+});
+
+glob('./src/samples/*.js', function(err, files) {
+    if (err) {
+        throw err;
+    }
+    const res = files.map(path => {
+        console.log('sample:', path);
+        const code = fs.readFileSync(path, 'utf-8');
+        const name = /([^\/]*)\.js$/.exec(path)[1];
+        return `export const ${name} = ${JSON.stringify({code, name})}`;
+    }).join('\n\n');
+
+    fs.writeFileSync('./src/samples-generated.ts', res);
+});

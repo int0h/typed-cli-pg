@@ -6,8 +6,10 @@ import { decorators } from 'typed-cli/src/decorator';
 import { CommandSet, CommandHelperParams, prepareCommandSet } from 'typed-cli/src/command';
 import chalk from 'chalk';
 import {parseArgsStringToArgv} from 'string-argv';
-import { completeForCommandSet } from 'typed-cli/src/completer';
+import { completeForCommandSet, completeForCliDecl } from 'typed-cli/src/completer';
 import { alignTextMatrix } from 'typed-cli/src/utils';
+import { createCliHelper } from 'typed-cli/src/cli-helper';
+import { prepareCliDeclaration } from 'typed-cli/src/parser';
 
 (window as any)._loader.onItemLoad(10);
 
@@ -25,7 +27,17 @@ const commandHelper = createCommandHelper({
     writer: (text, logType) => writeLn(text)
 });
 
-const cli = function() {};
+const cliHelper = createCliHelper({
+    argvProvider: () => argv,
+    exiter: (hasErrors) => exitCode = (hasErrors ? 1 : 0),
+    helpGeneration: true,
+    printer: new Printer({locale: locales.en_US, decorator: decorators.fancy, lineEnding: '\n\r'}),
+    writer: (text, logType) => writeLn(text)
+});
+
+const cli = function(...args: any) {
+    return (cliHelper as any)(...args);
+};
 cli.commands = commandHelper;
 
 const stringifyParams = (args: any) => {
@@ -86,14 +98,26 @@ function runHelper(newArgv: string[], evalCode: string) {
 
 function runCompleter(evalCode: string, argv: string[], buf: string) {
     let cs: any;
-    const cli = {
-        commands: (cfg: any, arg: any) => cs = arg
-    };
+    let decl: any;
+    function cli(_: any) {
+        decl = _;
+        throw 0;
+    }
+    cli.commands = (cfg: any, arg: any) => cs = arg;
     ((cli, command, option, console) => {
-        eval(evalCode);
+        try {
+            eval(evalCode);
+        } catch(e) {}
     })(cli, command, option, mockConsole);
-    cs = prepareCommandSet(cs);
-    const completions = completeForCommandSet(cs, argv.slice(0, -1), argv[argv.length - 1] || '');
+
+    let completions: any[] = [];
+    if (decl) {
+        decl = prepareCliDeclaration(decl).decl;
+        completions = completeForCliDecl(decl, argv.slice(0, -1), argv[argv.length - 1] || '');
+    } else {
+        cs = prepareCommandSet(cs);
+        completions = completeForCommandSet(cs, argv.slice(0, -1), argv[argv.length - 1] || '');
+    }
 
     applyCompletions(completions, argv, buf);
 }
@@ -140,38 +164,6 @@ function applyCompletions(completions: {completion: string, description: string}
 async function main() {
     const {getText, setText} = await init();
 
-    setText(`cli.commands({
-    program: 'git',
-    description: 'Git is a free and open source distributed'
-            + ' version control system designed to handle everything'
-            + ' from small to very large projects with speed and efficiency.',
-    completer: true,
-}, {
-    // reset
-    reset: command({
-        description: 'Reset current HEAD to the specified state',
-        options: {
-            hard: option('boolean').description('Resets the index and working tree'),
-            soft: option('boolean').description('Does not touch the index file or the working tree at all'),
-            mixed: option('boolean').description('Resets the index but not the working tree'),
-        },
-        _: option('string').required()
-    })
-        .handle(data => console.log('executing reset with params:', data)),
-
-    // checkout
-    checkout: command({
-        description: 'Switch branches or restore working tree files',
-        options: {
-            b: option('boolean').description('causes a new branch to be created '),
-        },
-        _: option('string').required()
-    })
-        .handle(data => console.log('executing checkout with params:', data))
-})
-
-`);
-
     onRead(str => {
         const [program, ...argv] = parseArgsStringToArgv(str);
         if (program === 'git') {
@@ -190,13 +182,13 @@ async function main() {
             runProgramCompleter(program || '');
             return;
         }
-        // console.log(argv);
-        const completions = runCompleter(getText(), argv, str);
-
+        runCompleter(getText(), argv, str);
     });
 
     (window as any)._loader.onItemLoad(10);
-    (window as any)._loader.onLoad();
+    setTimeout(() => {
+        (window as any)._loader.onLoad();
+    }, 100);
 }
 
 main();

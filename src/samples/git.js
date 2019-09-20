@@ -1,3 +1,4 @@
+// pseudo git
 cli.commands({
     program: 'git',
     description: 'Git is a free and open source distributed'

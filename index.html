@@ -75,22 +75,28 @@
             }
         })();
     </script>
-    <select id="term-theme">
-    </select>
-    <div class="win">
-        <div class="win-header">
-            ~/work - Terminal
+    <div class="layout">
+        <select id="term-theme">
+        </select>
+        <div class="win">
+            <div class="win-header">
+                ~/work - Terminal
+            </div>
+            <div id='terminal'></div>
         </div>
-        <div id='terminal'></div>
-    </div>
 
-    <select id="code-theme">
-    </select>
-    <div class="win">
-        <div class="win-header">
-            ~/work/curl.js - IDE
+        <div class="code-setting">
+            <select id="code-theme">
+            </select>
+            <select id="sample-select">
+            </select>
         </div>
-        <div id='code'></div>
+        <div class="win">
+            <div class="win-header">
+                ~/work/curl.js - IDE
+            </div>
+            <div id='code'></div>
+        </div>
     </div>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.js'></script>
     <script src="./dist/vs/loader.js"></script>
@@ -109,15 +115,6 @@
         });
         require(['vs/editor/editor.main'], function() {
             monacoLoaded(monaco);
-            console.log('loaded monaco');
-            // var editor = monaco.editor.create(document.getElementById('code'), {
-            //     value: [
-            //         'function x() {',
-            //         '\tconsole.log("Hello world!");',
-            //         '}'
-            //     ].join('\n'),
-            //     language: 'javascript'
-            // });
         });
     </script>
     <script src='./dist/app.bundle.js'></script>
