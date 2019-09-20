@@ -15,6 +15,33 @@ function waitForCallback(): Promise<typeof import('monaco-editor')> {
     });
 }
 
+const note = document.querySelector('#notification') as HTMLElement;
+let timerId: any;
+function notify(str: string) {
+    note.textContent = str;
+    note.style.opacity = '0.9';
+    clearTimeout(timerId);
+    timerId = setTimeout(() => {
+        note.style.opacity = '0';
+    }, 2000);
+}
+
+function ctrlSNotify() {
+    if (sessionStorage.getItem('ctrl-s-note-shown')) {
+        notify(`Old habits die hard, right ;)`);
+    } else {
+        notify(`The code is saved automatically, you don't have to do it by hand`);
+        sessionStorage.setItem('ctrl-s-note-shown', 'true');
+    }
+}
+
+(document.querySelector('.win-code') as HTMLElement).onkeydown = (e) => {
+    if (e.code === 'KeyS' && e.ctrlKey) {
+        e.preventDefault();
+        ctrlSNotify();
+    }
+}
+
 export async function init() {
     const monaco = await waitForCallback();
 

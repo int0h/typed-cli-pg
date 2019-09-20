@@ -93,8 +93,8 @@ html, body {
 }
 
 .layout {
-    min-width: 800px;
-    max-width: 800px;
+    min-width: 960px;
+    max-width: 960px;
     width: 100%;
 }
 
@@ -109,4 +109,17 @@ html, body {
 body {
     background-image: url(./bg2.jpg);
     background-size: cover;
+}
+
+#notification {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    background: #66b766;
+    color: white;
+    font-family: helvetica;
+    padding: 15px 20px;
+    opacity: 0;
+    transition: opacity 0.125s ease-in;
+    pointer-events: none;
 }
