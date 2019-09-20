@@ -73,11 +73,11 @@ const getCursorX = () => {
     return (term as any)._core.buffer.x;
 }
 
-term.writeln('This is a pseudo terminal');
-term.writeln('Supported shortcuts: Ctrl+C (reject input), Ctrl+K (clear terminal), Shift+Insert (paste)');
-term.writeln('Type some keys and commands to play around.');
-term.writeln('');
-prompt();
+// term.writeln('This is a pseudo terminal');
+// term.writeln('Supported shortcuts: Ctrl+C (reject input), Ctrl+K (clear terminal), Shift+Insert (paste)');
+// term.writeln('Type some keys and commands to play around.');
+// term.writeln('');
+// prompt();
 
 let reader = (str: string) => {console.log(str)};
 let tabHandler = (str: string) => {console.log('tab')};
@@ -85,6 +85,7 @@ let tabHandler = (str: string) => {console.log('tab')};
 let buf = '';
 
 const historyMgr = new HistoryMgr();
+(window as any).historyMgr = historyMgr;
 // window.h = historyMgr;
 
 function replaceText(text: string) {

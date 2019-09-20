@@ -8,11 +8,12 @@ cli.commands({
     [defaultCommand]: command({
         description: 'output',
     }).handle(data => {
-        console.log('This is a pseudo terminal');
+        console.log(`This is a pseudo terminal. It's ${chalk.underline('interactive')}!`);
         console.log('Supported shortcuts:');
         console.log('Ctrl+C (reject input), Ctrl+K (clear terminal) etc.');
-        console.log(`To see more shortcuts - type ${chalk.yellow('help --short')}`);
+        console.log(`To see more shortcuts - type ${chalk.yellow('help shortcuts')}`);
         console.log('Type some keys and commands to play around.');
+        console.log(`Code editor below is ${chalk.underline('interactive')} as well!`);
     }),
 
     // shortcuts

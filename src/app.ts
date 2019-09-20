@@ -82,11 +82,15 @@ function runHelper(newArgv: string[], evalCode: string) {
         ((cli, command, option, console, chalk, defaultCommand) => {
             eval(evalCode);
         })(cli, command, option, mockConsole, chalk, defaultCommand);
-        writeLn('');
-        writeLn(chalk.italic(`[exit code = ${chalk.blue(exitCode.toString())}]`));
+        if (exitCode !== 0) {
+            writeLn('');
+            writeLn(chalk.italic(`[exit code = ${chalk.blue(exitCode.toString())}]`));
+        }
     } catch(e) {
-        writeLn('');
-        writeLn(chalk.italic(`[exit code = ${chalk.blue(exitCode.toString())}]`));
+        if (exitCode !== 0) {
+            writeLn('');
+            writeLn(chalk.italic(`[exit code = ${chalk.blue(exitCode.toString())}]`));
+        }
         if (e.message === 'exiter has failed') {
             return;
         }
@@ -180,7 +184,7 @@ function resolveProgram(program: string): null | string {
 async function main() {
     const {getText, setText} = await init();
 
-    onRead(str => {
+    const runShellStr = (str: string) => {
         const [program, ...argv] = parseArgsStringToArgv(str);
         const jsCode = resolveProgram(program);
         if (!jsCode) {
@@ -190,7 +194,9 @@ async function main() {
         }
         writeLn('');
         runHelper(argv, jsCode);
-    });
+    };
+
+    onRead(runShellStr);
 
     onTab(str => {
         const [program, ...argv] = parseArgsStringToArgv(str);
@@ -207,6 +213,9 @@ async function main() {
         }
         runCompleter(code, argv, str);
     });
+
+    runShellStr('help');
+    prompt();
 
     (window as any)._loader.onItemLoad(10);
     setTimeout(() => {

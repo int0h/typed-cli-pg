@@ -2,6 +2,11 @@ export class HistoryMgr {
     items: string[] = [''];
     index: number = 0;
 
+    clear() {
+        this.items = [''];
+        this.index = 0;
+    }
+
     push(str: string) {
         this.items[this.items.length - 1] = str;
         this.items.push('');
