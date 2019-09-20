@@ -29,10 +29,11 @@ export async function init() {
     }
     themeSelector.onchange = () => {
         monaco.editor.setTheme(themeSelector.value);
+        localStorage.setItem('code-theme', themeSelector.value);
     }
-
-    monaco.editor.setTheme('monokai');
-
+    const savedTheme = localStorage.getItem('code-theme') || 'monokai';
+    themeSelector.value = savedTheme;
+    monaco.editor.setTheme(savedTheme);
 
     const sampleSelector = document.querySelector('#sample-select') as HTMLSelectElement;
     for (const [name, theme] of Object.entries(samples)) {
@@ -44,7 +45,10 @@ export async function init() {
     }
     sampleSelector.onchange = () => {
         model.setValue((samples as any)[sampleSelector.value].code);
+        localStorage.setItem('code-sample', sampleSelector.value);
     }
+
+
 
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
         noSemanticValidation: true,
@@ -98,6 +102,12 @@ export async function init() {
         model: model
     });
 
+    model.onDidChangeContent(() => {
+        console.log('changed');
+    });
+
+    const choosenSample = localStorage.getItem('code-sample') || 'basic';
+    sampleSelector.value = choosenSample;
     sampleSelector.onchange(null as any);
 
     return {

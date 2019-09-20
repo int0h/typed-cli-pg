@@ -93,8 +93,8 @@ html, body {
 }
 
 .layout {
-    min-width: 500px;
-    max-width: 900px;
+    min-width: 800px;
+    max-width: 800px;
     width: 100%;
 }
 
