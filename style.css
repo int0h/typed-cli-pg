@@ -123,3 +123,9 @@ body {
     transition: opacity 0.125s ease-in;
     pointer-events: none;
 }
+
+.fork-me-ribbon {
+    position: absolute;
+    top: 0;
+    right: 0;
+}

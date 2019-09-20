@@ -1,10 +1,11 @@
 + monaco themes
 + support terminal history
 + loader
-- css fixes
-    - fixed width wrapper
-- GitHub ribbon
-- help command
++ css fixes
+    + fixed width wrapper
++ help command
++ GitHub ribbon
++ logo
 - localStorage
 - share
 

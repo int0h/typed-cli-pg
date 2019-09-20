@@ -2,15 +2,21 @@ export class HistoryMgr {
     items: string[] = [''];
     index: number = 0;
 
+    constructor() {
+        this.syncPull();
+    }
+
     clear() {
         this.items = [''];
         this.index = 0;
+        this.syncPush();
     }
 
     push(str: string) {
         this.items[this.items.length - 1] = str;
         this.items.push('');
         this.index = this.items.length - 1;
+        this.syncPush();
     }
 
     go(i: number, curText: string): string {
@@ -28,6 +34,18 @@ export class HistoryMgr {
 
     goDown(curText: string): string {
         return this.go(this.index + 1, curText);
+    }
+
+    syncPush() {
+        const data = this.items;
+        localStorage.setItem('term-history', JSON.stringify(data));
+    }
+
+    syncPull() {
+        const json = localStorage.getItem('term-history');
+        const data = json && JSON.parse(json) || [];
+        this.items = data;
+        this.index = Math.max(this.items.length - 1, 0);
     }
 }
 
