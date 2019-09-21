@@ -35,13 +35,6 @@ function ctrlSNotify() {
     }
 }
 
-(document.querySelector('.win-code') as HTMLElement).onkeydown = (e) => {
-    if (e.code === 'KeyS' && e.ctrlKey) {
-        e.preventDefault();
-        ctrlSNotify();
-    }
-}
-
 export async function init() {
     const monaco = await waitForCallback();
 
@@ -77,7 +70,50 @@ export async function init() {
         updateTitle();
     }
 
+    (document.querySelector('#discard') as HTMLElement).onclick = () => {
+        const sampleName = sampleSelector.value;
+        if (confirm(`Are you sure you want to discard changes in "${sampleName}" sample?`)) {
+            const code = (samples as any)[sampleName].code;
+            model.setValue(code);
+        }
+    };
 
+    const encodeCode = (str: string): string => {
+        return btoa(encodeURIComponent(str));
+    }
+
+    const decodeCode = (str: string): string => {
+        return decodeURIComponent(atob(str));
+    }
+
+    const copyToClipboard = (str: string) => {
+        try {
+            const cp = document.querySelector('#clipboard') as HTMLInputElement;
+            cp.value = str;
+            cp.select();
+            document.execCommand('copy');
+            notify('The link is coppied to clipboard');
+        } catch(e) {
+            alert('Failed to copy to clipboard: ' + e.message);
+        }
+    }
+
+    function share() {
+        const encoded = encodeCode(model.getValue());
+        const link = window.location.toString().replace(/#.*$/, '') + `#share-${encoded}`;
+        copyToClipboard(link);
+    }
+
+    (document.querySelector('#share') as HTMLElement).onclick = () => {
+        share();
+    };
+
+    (document.querySelector('.win-code') as HTMLElement).onkeydown = (e) => {
+        if (e.code === 'KeyS' && e.ctrlKey) {
+            e.preventDefault();
+            share();
+        }
+    }
 
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
         noSemanticValidation: true,
@@ -115,14 +151,40 @@ export async function init() {
         return sampleText !== actualText;
     }
 
+    const shareBtn = document.querySelector('#share') as HTMLElement;
+    const discardBtn = document.querySelector('#discard') as HTMLElement;
     model.onDidChangeContent(() => {
         localStorage.setItem(`sample-code[${sampleSelector.value}]`, model.getValue());
         updateTitle();
+        const changed = isSampleChanged();
+        shareBtn.style.display = changed ? 'block' : 'none';
+        discardBtn.style.display = changed ? 'block' : 'none';
     });
 
-    const choosenSample = localStorage.getItem('code-sample') || 'basic';
-    sampleSelector.value = choosenSample;
-    sampleSelector.onchange(null as any);
+    if (window.location.hash) {
+        try {
+            const choosenSample = 'share_sample';
+            sampleSelector.value = choosenSample;
+            const codeFragment = /#share-([^\-]*)/.exec(window.location.hash.toString());
+            if (!codeFragment) {
+                throw new Error('invalid hash');
+            }
+            const code = decodeCode(codeFragment[1]);
+            localStorage.setItem(`sample-code[${choosenSample}]`, code);
+            sampleSelector.onchange(null as any);
+        } catch(e) {
+            alert('failed to open the link');
+            const choosenSample = localStorage.getItem('code-sample') || 'basic';
+            sampleSelector.value = choosenSample;
+            sampleSelector.onchange(null as any);
+        }
+    } else {
+        const choosenSample = localStorage.getItem('code-sample') || 'basic';
+        sampleSelector.value = choosenSample;
+        sampleSelector.onchange(null as any);
+    }
+
+
 
     return {
         setText: (text: string) => model.setValue(text),
