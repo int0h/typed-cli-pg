@@ -15,6 +15,7 @@
     "source-map-loader": "^0.2.4",
     "string-argv": "^0.3.1",
     "style-loader": "^1.0.0",
+    "sucrase": "^3.10.1",
     "typed-cli": "../cli",
     "typescript": "^3.6.2",
     "webpack": "^4.39.3",

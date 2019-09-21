@@ -131,15 +131,11 @@ term.on('key', function (key, ev) {
         // history.push(t);
         prompt();
     } else if (ev.keyCode == 8) {
-        if (getCursorX() > promptsize) {
+        if (getCursorX() > promptsize + Math.max(0, buf.length - 1)) {
             buf = buf.slice(0, -1);
             term.write('\b \b');
         }
     } else if (printable) {
-        if (key.length === 1) {
-            buf += key;
-            // console.log(buf);
-        }
         if (ev.code === 'ArrowUp') {
             replaceText(historyMgr.goUp(buf));
         }
@@ -147,7 +143,14 @@ term.on('key', function (key, ev) {
             replaceText(historyMgr.goDown(buf));
         }
         if (ev.code !== 'ArrowUp' && ev.code !== 'ArrowDown') {
-            term.write(key);
+            if (ev.code === 'ArrowLeft' || ev.code === 'ArrowRight') {
+                term.write(key);
+            } else if (getCursorX() > promptsize + buf.length - 1) {
+                term.write(key);
+            }
+        }
+        if (key.length === 1 && getCursorX() > promptsize + buf.length - 1) {
+            buf += key;
         }
     }
 });

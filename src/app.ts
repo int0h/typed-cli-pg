@@ -10,7 +10,9 @@ import { completeForCommandSet, completeForCliDecl } from 'typed-cli/src/complet
 import { alignTextMatrix } from 'typed-cli/src/utils';
 import { createCliHelper } from 'typed-cli/src/cli-helper';
 import { prepareCliDeclaration } from 'typed-cli/src/parser';
+import * as presets from 'typed-cli/presets';
 import * as samples from './samples-generated';
+import {transform} from 'sucrase';
 
 (window as any)._loader.onItemLoad(10);
 
@@ -79,9 +81,9 @@ function runHelper(newArgv: string[], evalCode: string) {
     argv = newArgv;
     try {
         exitCode = 0;
-        ((cli, command, option, console, chalk, defaultCommand) => {
+        ((cli, command, option, console, chalk, defaultCommand, presets) => {
             eval(evalCode);
-        })(cli, command, option, mockConsole, chalk, defaultCommand);
+        })(cli, command, option, mockConsole, chalk, defaultCommand, presets);
         if (exitCode !== 0) {
             writeLn('');
             writeLn(chalk.italic(`[exit code = ${chalk.blue(exitCode.toString())}]`));
@@ -112,8 +114,8 @@ function runCompleter(evalCode: string, argv: string[], buf: string) {
         cs = arg;
     };
     try {
-        const fn = new Function('cli', 'command', 'option', 'console', 'defaultCommand', evalCode);
-        fn(cli, command, option, mockConsole, defaultCommand)
+        const fn = new Function('cli', 'command', 'option', 'console', 'defaultCommand', 'presets', evalCode);
+        fn(cli, command, option, mockConsole, defaultCommand, presets)
     } catch(e) {
         // console.error(e);
         // return;
@@ -178,7 +180,8 @@ function resolveProgram(program: string): null | string {
         return null;
     }
     const code = localStorage.getItem(`sample-code[${program}]`) || sample.code;
-    return code;
+    const js = transform(code, {transforms: ["typescript", "imports"]});
+    return js.code;
 }
 
 async function main() {

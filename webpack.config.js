@@ -97,11 +97,16 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: ['style-loader', 'css-loader']
+            },
+            {
+                test: /\.mjs$/,
+                include: /node_modules/,
+                type: "javascript/auto",
             }
         ],
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js', '.css']
+        extensions: ['.tsx', '.ts', '.js', '.css', '.mjs']
     },
     output: {
         publicPath: './dist/',
