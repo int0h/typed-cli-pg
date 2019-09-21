@@ -13,7 +13,8 @@ export class HistoryMgr {
     }
 
     push(str: string) {
-        this.items[this.items.length - 1] = str;
+        this.items.pop();
+        this.items.push(str);
         this.items.push('');
         this.index = this.items.length - 1;
         this.syncPush();
