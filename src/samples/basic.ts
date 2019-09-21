@@ -14,7 +14,7 @@ const data = cli({
     _: option('number').array()
 });
 
-const OperatorMap = {
+const operatorMap = {
     '+': (prev: number, cur: number) => prev + cur,
     '/': (prev: number, cur: number) => prev / cur,
     '-': (prev: number, cur: number) => prev - cur,
@@ -31,4 +31,4 @@ const [n1, n2] = data._;
 // op: '+' | '-' | '*' | '/'
 const op = data.options.operation;
 
-console.log(`Calculating: ${n1} ${op} ${n2} = ${[n1, n2].reduce(OperatorMap[op])}`);
+console.log(`Calculating: ${n1} ${op} ${n2} = ${[n1, n2].reduce(operatorMap[op])}`);

@@ -122,6 +122,9 @@ export async function init() {
 
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
         target: monaco.languages.typescript.ScriptTarget.ES2015,
+        allowSyntheticDefaultImports: true,
+        esModuleInterop: true,
+        module: monaco.languages.typescript.ModuleKind.CommonJS,
         allowNonTsExtensions: true
     });
 
