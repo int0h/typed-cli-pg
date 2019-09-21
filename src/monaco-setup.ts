@@ -142,7 +142,7 @@ export async function init() {
 
     function updateTitle() {
         const elm = document.querySelector('.win-code .win-header') as HTMLElement;
-        elm.textContent = (isSampleChanged() ? '● ' : '') + `~/work/${sampleSelector.value}.js - IDE`
+        elm.textContent = (isSampleChanged() ? '● ' : '') + `~/work/${sampleSelector.value}.ts - IDE`
     }
 
     function isSampleChanged() {

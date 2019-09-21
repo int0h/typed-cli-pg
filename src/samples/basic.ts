@@ -1,9 +1,11 @@
 // basic cli usage
+import {cli, option, presets} from 'typed-cli';
+
 const data = cli({
     name: 'calc',
     description: 'Calculate expressions',
     options: {
-        operation: option('string')
+        operation: presets.oneOf(['+', '-', '*', '/'] as const)
             .alias('o')
             .required()
             .description('opeartion to be applied'),
@@ -13,10 +15,10 @@ const data = cli({
 });
 
 const OperatorMap = {
-    '+': (prev, cur) => prev + cur,
-    '/': (prev, cur) => prev / cur,
-    '-': (prev, cur) => prev - cur,
-    '*': (prev, cur) => prev * cur,
+    '+': (prev: number, cur: number) => prev + cur,
+    '/': (prev: number, cur: number) => prev / cur,
+    '-': (prev: number, cur: number) => prev - cur,
+    '*': (prev: number, cur: number) => prev * cur,
 };
 
 // Type safe!
@@ -26,7 +28,7 @@ const OperatorMap = {
 const [n1, n2] = data._;
 
 // Type safe!
-// op: string
+// op: '+' | '-' | '*' | '/'
 const op = data.options.operation;
 
 console.log(`Calculating: ${n1} ${op} ${n2} = ${[n1, n2].reduce(OperatorMap[op])}`);

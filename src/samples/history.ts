@@ -1,4 +1,6 @@
 // mananges shell history
+import {cli, option} from 'typed-cli';
+
 const data = cli({
     name: 'history',
     description: 'mananges shell history',

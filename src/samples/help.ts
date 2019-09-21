@@ -1,4 +1,7 @@
 // output the manual for this demo
+import {cli, defaultCommand, command} from 'typed-cli';
+import chalk from 'chalk';
+
 cli.commands({
     program: 'help',
     description: 'outputs the manual for this demo',

@@ -38,11 +38,6 @@ const cliHelper = createCliHelper({
     writer: (text, logType) => writeLn(text)
 });
 
-const cli = function(...args: any) {
-    return (cliHelper as any)(...args);
-};
-cli.commands = commandHelper;
-
 const stringifyParams = (args: any) => {
     return args.map((i: any) => {
         switch (typeof i) {
@@ -77,13 +72,28 @@ const mockConsole = {
     }
 }
 
+function mockRequire(cli: any) {
+    return (str: string) => {
+        if (str === 'typed-cli') {
+            return {cli, command, option, defaultCommand, presets};
+        }
+        if (str === 'chalk') {
+            return chalk;
+        }
+        throw new Error(`only 'typed-cli' can be required in this demo`);
+    }
+}
+
 function runHelper(newArgv: string[], evalCode: string) {
     argv = newArgv;
+    exitCode = 0;
+    const cli = function(...args: any) {
+        return (cliHelper as any)(...args);
+    };
+    (cli as any).commands = commandHelper;
     try {
-        exitCode = 0;
-        ((cli, command, option, console, chalk, defaultCommand, presets) => {
-            eval(evalCode);
-        })(cli, command, option, mockConsole, chalk, defaultCommand, presets);
+        const fn = new Function('require', 'console', evalCode);
+        fn(mockRequire(cli), mockConsole)
         if (exitCode !== 0) {
             writeLn('');
             writeLn(chalk.italic(`[exit code = ${chalk.blue(exitCode.toString())}]`));
@@ -114,18 +124,12 @@ function runCompleter(evalCode: string, argv: string[], buf: string) {
         cs = arg;
     };
     try {
-        const fn = new Function('cli', 'command', 'option', 'console', 'defaultCommand', 'presets', evalCode);
-        fn(cli, command, option, mockConsole, defaultCommand, presets)
+        const fn = new Function('require', 'console', evalCode);
+        fn(mockRequire(cli), mockConsole)
     } catch(e) {
         // console.error(e);
         // return;
     }
-    // ((cli, command, option, console) => {
-    //     try {
-    //         eval(evalCode);
-    //     } catch(e) {}
-    // })(cli, command, option, mockConsole);
-
     let completions: any[] = [];
     if (decl) {
         decl = prepareCliDeclaration(decl).decl;
@@ -188,6 +192,9 @@ async function main() {
     const {getText, setText} = await init();
 
     const runShellStr = (str: string) => {
+        if (str === '') {
+            return;
+        }
         const [program, ...argv] = parseArgsStringToArgv(str);
         const jsCode = resolveProgram(program);
         if (!jsCode) {

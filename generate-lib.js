@@ -16,7 +16,7 @@ glob('./node_modules/typed-cli/**/*.d.ts', function(err, files) {
     fs.writeFileSync('./src/lib-generated.ts', code);
 });
 
-glob('./src/samples/*.js', function(err, files) {
+glob('./src/samples/*.ts', function(err, files) {
     if (err) {
         throw err;
     }
@@ -26,7 +26,7 @@ glob('./src/samples/*.js', function(err, files) {
         const [firstLine, ...rest] = codeRaw.split('\n');
         const description = firstLine.slice(3); // trim '// '
         const code = rest.join('\n');
-        const name = /([^\/]*)\.js$/.exec(path)[1];
+        const name = /([^\/]*)\.ts$/.exec(path)[1];
         return `export const ${name} = ${JSON.stringify({code, name, description})}`;
     }).join('\n\n');
 

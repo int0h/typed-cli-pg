@@ -1,4 +1,6 @@
 // pseudo git
+import {cli, option, command} from 'typed-cli';
+
 cli.commands({
     program: 'git',
     description: 'Git is a free and open source distributed'
