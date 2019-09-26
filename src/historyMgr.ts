@@ -22,7 +22,7 @@ export class HistoryMgr {
 
     go(i: number, curText: string): string {
         if (i < 0 || i >= this.items.length) {
-            return this.items[this.index];
+            return curText;
         }
         this.items[this.index] = curText;
         this.index = i;

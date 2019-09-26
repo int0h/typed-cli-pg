@@ -5,7 +5,7 @@ const data = cli({
     name: 'history',
     description: 'mananges shell history',
     options: {
-        clear: option('boolean')
+        clear: option.boolean
             .alias('c')
             .description('clears the history'),
     }

@@ -12,9 +12,9 @@ cli.commands({
     reset: command({
         description: 'Reset current HEAD to the specified state',
         options: {
-            hard: option('boolean').description('Resets the index and working tree'),
-            soft: option('boolean').description('Does not touch the index file or the working tree at all'),
-            mixed: option('boolean').description('Resets the index but not the working tree'),
+            hard: option.boolean.description('Resets the index and working tree'),
+            soft: option.boolean.description('Does not touch the index file or the working tree at all'),
+            mixed: option.boolean.description('Resets the index but not the working tree'),
         }
     })
         .handle(data => console.log('executing reset with params:', data)),
@@ -23,9 +23,9 @@ cli.commands({
     checkout: command({
         description: 'Switch branches or restore working tree files',
         options: {
-            b: option('boolean').description('causes a new branch to be created '),
+            b: option.boolean.description('causes a new branch to be created '),
         },
-        _: option('string').required()
+        _: option.string.required()
     })
         .handle(data => console.log('executing checkout with params:', data))
 })
