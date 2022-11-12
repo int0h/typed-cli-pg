@@ -19,7 +19,7 @@
     "typed-cli": "../cli",
     "typescript": "^3.6.2",
     "webpack": "^4.39.3",
-    "webpack-cli": "^3.3.8",
+    "webpack-cli": "^3.3.12",
     "xterm": "^3.14.5"
   },
   "devDependencies": {
